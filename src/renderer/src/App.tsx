@@ -1,21 +1,35 @@
 // import Versions from './components/Versions';
 // import icons from './assets/icons.svg';
-import { Button } from '@renderer/components/ui/button';
+import { FormModel } from '@renderer/model/form/FormModel';
+import MainForm from '@renderer/components/MainForm/MainForm';
+import { useCallback } from 'react';
+import { ThemeModeToggle } from '@renderer/components/ThemeModeToggle';
+
+const form = new FormModel({
+  id: 'default',
+  publicName: 'Основная',
+  description: 'Это основная форма',
+  rows: [
+    { id: 'field1', publicName: 'Первое поле', description: 'Описание первого поля' },
+    { id: 'field2', publicName: 'Второе поле' }
+  ]
+});
 
 function App(): JSX.Element {
+  const handleFormSubmit = useCallback((data: any) => {
+    console.log(data);
+  }, []);
+
   return (
     <div className="container">
-      <Button variant="outline">Button</Button>
+      <ThemeModeToggle className={'my-3'} />
+      <MainForm formModel={form} onSubmit={handleFormSubmit} />
+
+      {/* EXAMPLE CODE BELLOW */}
       {/*<Versions></Versions>*/}
 
       {/*<svg className="hero-logo" viewBox="0 0 900 300">*/}
       {/*  <use xlinkHref={`${icons}#electron`} />*/}
-      {/*</svg>*/}
-      {/*<h2 className="hero-text">*/}
-      {/*  You{"'"}ve successfully created an Electron project with React and TypeScript*/}
-      {/*</h2>*/}
-      {/*<p className="hero-tagline">*/}
-      {/*  Please try pressing <code>F12</code> to open the devTool*/}
       {/*</p>*/}
 
       {/*<div className="links">*/}
