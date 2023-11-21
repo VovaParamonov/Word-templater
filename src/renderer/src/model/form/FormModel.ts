@@ -1,8 +1,9 @@
-import {
-  FormRowModel,
-  IFormRowModel,
-  IFormRowModelDescriptor
-} from '@renderer/model/form/FormRow';
+import { FormRowModel, IFormRowModel, IFormRowModelDescriptor } from '@renderer/model/form/FormRow';
+import { FormRowModelTypeType } from 'src/renderer/src/model/form/FormRow';
+
+export interface IGetRowOptions {
+  type?: FormRowModelTypeType | 'all';
+}
 
 export interface IFormModelDescriptor {
   rows: IFormRowModelDescriptor[];
@@ -30,8 +31,14 @@ export class FormModel implements IFormModel {
     this._description = descriptor.description || '';
   }
 
-  getRows(): FormRowModel[] {
-    return this._rows;
+  getRows(options: IGetRowOptions = {}): FormRowModel[] {
+    const { type = 'all' } = options;
+
+    if (type === 'all') {
+      return this._rows;
+    }
+
+    return this._rows.filter((row) => row.getType() === type);
   }
 
   toDescriptor(): IFormModelDescriptor {

@@ -4,6 +4,7 @@ export interface IFormRowModel {
   getRequired: () => boolean;
   getDescription: () => string;
   toDescriptor: () => IFormRowModelDescriptor;
+  getType: () => FormRowModelTypeType;
   clone: (update: Partial<IFormRowModelDescriptor>) => FormRowModel;
 }
 
@@ -12,19 +13,25 @@ export interface IFormRowModelDescriptor {
   publicName: string;
   required?: boolean;
   description?: string;
+  type?: FormRowModelTypeType;
 }
+
+export type FormRowModelTypeType = 'calc' | 'input';
 
 export class FormRowModel implements IFormRowModel {
   private readonly _id: string;
   private readonly _publicName: string;
   private readonly _required: boolean;
   private readonly _description: string;
+  // TODO: Заменить на наследование классов
+  private readonly _type: FormRowModelTypeType;
 
   constructor(descriptor: IFormRowModelDescriptor) {
     this._id = descriptor.id;
     this._publicName = descriptor.publicName;
     this._required = descriptor.required || false;
     this._description = descriptor.description || '';
+    this._type = descriptor.type || 'input';
   }
 
   getDescription(): string {
@@ -48,7 +55,8 @@ export class FormRowModel implements IFormRowModel {
       id: this._id,
       publicName: this._publicName,
       required: this._required,
-      description: this._description
+      description: this._description,
+      type: this._type
     };
   }
 
@@ -59,10 +67,14 @@ export class FormRowModel implements IFormRowModel {
     });
   }
 
+  getType(): FormRowModelTypeType {
+    return this._type;
+  }
+
   static serialize(formRowModel: FormRowModel): IFormRowModelDescriptor {
     return formRowModel.toDescriptor();
   }
-  static deserialize(formRowModelDescriptor: IFormRowModelDescriptor): IFormRowModel {
+  static deserialize(formRowModelDescriptor: IFormRowModelDescriptor): FormRowModel {
     return new FormRowModel(formRowModelDescriptor);
   }
 }

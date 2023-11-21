@@ -11,7 +11,8 @@ const form = new FormModel({
   description: 'Это основная форма',
   rows: [
     { id: 'field1', publicName: 'Первое поле', description: 'Описание первого поля' },
-    { id: 'field2', publicName: 'Второе поле' }
+    { id: 'field2', publicName: 'Второе поле' },
+    { id: 'field3', publicName: 'Рассчитываемое поле', type: 'calc' }
   ]
 });
 

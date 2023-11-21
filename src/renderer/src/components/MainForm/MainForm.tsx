@@ -42,7 +42,7 @@ const MainForm: FC<IMainFormProps> = (props) => {
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: formModel.getRows().reduce(
+    defaultValues: formModel.getRows({ type: 'input' }).reduce(
       (accum, row) => ({
         ...accum,
         [row.getId()]: ''
@@ -52,7 +52,7 @@ const MainForm: FC<IMainFormProps> = (props) => {
   });
 
   const formRowsJSX = useMemo(() => {
-    const rows = formModel.getRows();
+    const rows = formModel.getRows({ type: 'input' });
 
     return rows.map((rowModel) => (
       <FormRow fomController={form} key={rowModel.getId()} formRowModel={rowModel} />
