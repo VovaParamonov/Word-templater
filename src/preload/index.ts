@@ -1,8 +1,12 @@
-import { contextBridge } from 'electron';
+import { contextBridge, ipcRenderer } from 'electron';
 import { electronAPI } from '@electron-toolkit/preload';
+import type { IGenReportOptions } from '../main/api';
 
 // Custom APIs for renderer
-const api = {};
+export const api = {
+  ping: () => ipcRenderer.invoke('ping'),
+  genReport: (options: IGenReportOptions) => ipcRenderer.invoke('genReport', options)
+};
 
 // Use `contextBridge` APIs to expose Electron APIs to
 // renderer only if context isolation is enabled, otherwise

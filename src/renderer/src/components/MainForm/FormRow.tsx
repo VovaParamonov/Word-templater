@@ -9,11 +9,11 @@ import {
   FormMessage
 } from '@renderer/components/ui/form';
 import { Input } from '@renderer/components/ui/input';
-import { FormRowModel } from '@renderer/model/form/FormRow';
+import { FormRowModel, FormRowModelTypeType } from '@renderer/model/form/FormRow';
 
 interface IFormRowProps {
   fomController: UseFormReturn;
-  formRowModel: FormRowModel;
+  formRowModel: FormRowModel<FormRowModelTypeType>;
 }
 
 const FormRow: FC<IFormRowProps> = (props) => {
@@ -27,7 +27,7 @@ const FormRow: FC<IFormRowProps> = (props) => {
         <FormItem>
           <FormLabel>{formRowModel.getPublicName()}</FormLabel>
           <FormControl>
-            <Input type={'number'} {...field} />
+            <Input type={'text'} {...field} />
           </FormControl>
           <FormDescription>{formRowModel.getDescription()}</FormDescription>
           <FormMessage />

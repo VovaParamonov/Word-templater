@@ -2,7 +2,7 @@
 // import icons from './assets/icons.svg';
 import { FormModel } from '@renderer/model/form/FormModel';
 import MainForm from '@renderer/components/MainForm/MainForm';
-import { useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 import { ThemeModeToggle } from '@renderer/components/ThemeModeToggle';
 
 const form = new FormModel({
@@ -10,21 +10,43 @@ const form = new FormModel({
   publicName: 'Основная',
   description: 'Это основная форма',
   rows: [
-    { id: 'field1', publicName: 'Первое поле', description: 'Описание первого поля' },
-    { id: 'field2', publicName: 'Второе поле' },
-    { id: 'field3', publicName: 'Рассчитываемое поле', type: 'calc' }
+    { id: 'field0', publicName: 'Рассчитываемое поле', type: 'calc' },
+    {
+      id: 'field1',
+      publicName: 'Первое поле',
+      description: 'Описание первого поля',
+      type: 'input'
+    },
+    { id: 'field2', publicName: 'Второе поле', type: 'input' }
   ]
 });
 
 function App(): JSX.Element {
-  const handleFormSubmit = useCallback((data: any) => {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const handleFormSubmit = useCallback(async (data: Record<string, number>) => {
+    const file = (fileInputRef.current?.files ?? [])[0];
     console.log(data);
+    console.log('file: ', file);
+
+    if (!file) {
+      return;
+    }
+
+    const genResult = await window.api.genReport({
+      filePath: file.path,
+      data: data
+    });
+
+    console.log('gen result: ', genResult);
+
+    console.log(await window.api.ping());
   }, []);
 
   return (
     <div className="container">
       <ThemeModeToggle className={'my-3'} />
       <MainForm formModel={form} onSubmit={handleFormSubmit} />
+      <input type={'file'} ref={fileInputRef} />
 
       {/* EXAMPLE CODE BELLOW */}
       {/*<Versions></Versions>*/}

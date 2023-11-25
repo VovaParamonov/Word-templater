@@ -1,12 +1,16 @@
-import { FormRowModel, IFormRowModel, IFormRowModelDescriptor } from '@renderer/model/form/FormRow';
-import { FormRowModelTypeType } from 'src/renderer/src/model/form/FormRow';
+import { FormRowModel, IFormRowModel } from '@renderer/model/form/FormRow';
+import {
+  FormRowModelTypeType,
+  IFormCalculatedRowDescription,
+  IFormInputRowDescription
+} from '@renderer/model/form/FormRow';
 
 export interface IGetRowOptions {
   type?: FormRowModelTypeType | 'all';
 }
 
 export interface IFormModelDescriptor {
-  rows: IFormRowModelDescriptor[];
+  rows: (IFormInputRowDescription | IFormCalculatedRowDescription)[];
   id: string;
   publicName: string;
   description?: string;
@@ -17,21 +21,21 @@ export interface IFormModel {
   getPublicName: () => string;
   getDescription: () => string;
   toDescriptor(): IFormModelDescriptor;
-  getRows: () => IFormRowModel[];
+  getRows: () => IFormRowModel<FormRowModelTypeType>[];
 }
 export class FormModel implements IFormModel {
-  private readonly _rows: FormRowModel[];
+  private readonly _rows: FormRowModel<FormRowModelTypeType>[];
   private readonly _id: string;
   private readonly _publicName: string;
   private readonly _description: string;
   constructor(descriptor: IFormModelDescriptor) {
-    this._rows = descriptor.rows.map((rowDesc) => new FormRowModel(rowDesc));
+    this._rows = descriptor.rows.map((rowDesc) => FormRowModel.deserialize(rowDesc));
     this._id = descriptor.id;
     this._publicName = descriptor.publicName;
     this._description = descriptor.description || '';
   }
 
-  getRows(options: IGetRowOptions = {}): FormRowModel[] {
+  getRows(options: IGetRowOptions = {}): FormRowModel<FormRowModelTypeType>[] {
     const { type = 'all' } = options;
 
     if (type === 'all') {

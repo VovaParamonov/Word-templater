@@ -10,10 +10,11 @@ import {
 } from '@renderer/components/ui/card';
 import { Button } from '@renderer/components/ui/button';
 import { Form } from '@renderer/components/ui/form';
-import * as z from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { CardFooter } from '@renderer/components/ui/card';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+// import { ScrollArea } from '@renderer/components/ui/scroll-area';
 
 interface IMainFormProps {
   formModel: FormModel;
@@ -26,22 +27,26 @@ const MainForm: FC<IMainFormProps> = (props) => {
 
   const formSchema = useMemo(
     () =>
-      z.object(
-        formModel.getRows().reduce(
-          (accum, item) => ({
-            ...accum,
-            [item.getId()]: z
-              .string({ required_error: 'Поле обязательно для заполнения' })
-              .transform((value) => (value ? parseInt(value, 10) : undefined))
-          }),
-          {}
-        )
+      yup.object(
+        formModel
+          .getRows()
+          .filter((row) => row.getType() !== 'calc')
+          .reduce(
+            (accum, item) => ({
+              ...accum,
+              [item.getId()]: yup
+                .number()
+                .transform((value) => (value ? parseInt(value, 10) : undefined))
+                .required('Введите число')
+            }),
+            {}
+          )
       ),
     [formModel]
   );
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm({
+    resolver: yupResolver(formSchema),
     defaultValues: formModel.getRows({ type: 'input' }).reduce(
       (accum, row) => ({
         ...accum,
@@ -76,11 +81,18 @@ const MainForm: FC<IMainFormProps> = (props) => {
       </CardHeader>
       <CardContent>
         <Form {...form}>
+          {/*<ScrollArea>*/}
           <form>{formRowsJSX}</form>
+          {/*</ScrollArea>*/}
         </Form>
       </CardContent>
       <CardFooter>
-        <Button onClick={form.handleSubmit(handleSubmit)}>Рассчитать</Button>
+        <Button
+          disabled={!!Object.keys(form.formState.errors).length}
+          onClick={form.handleSubmit(handleSubmit)}
+        >
+          Рассчитать
+        </Button>
       </CardFooter>
     </Card>
   );

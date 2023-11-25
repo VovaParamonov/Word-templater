@@ -1,32 +1,32 @@
-export interface IFormRowModel {
+export interface IFormRowModel<T extends FormRowModelTypeType> {
   getId: () => string;
   getPublicName: () => string;
   getRequired: () => boolean;
   getDescription: () => string;
-  toDescriptor: () => IFormRowModelDescriptor;
+  toDescriptor: () => IFormRowModelDescriptor<T>;
   getType: () => FormRowModelTypeType;
-  clone: (update: Partial<IFormRowModelDescriptor>) => FormRowModel;
+  clone: (update: Partial<IFormRowModelDescriptor<T>>) => FormRowModel<T>;
 }
 
-export interface IFormRowModelDescriptor {
+export interface IFormRowModelDescriptor<T extends FormRowModelTypeType> {
   id: string;
   publicName: string;
   required?: boolean;
   description?: string;
-  type?: FormRowModelTypeType;
+  type: T;
 }
 
 export type FormRowModelTypeType = 'calc' | 'input';
 
-export class FormRowModel implements IFormRowModel {
-  private readonly _id: string;
-  private readonly _publicName: string;
-  private readonly _required: boolean;
-  private readonly _description: string;
+export abstract class FormRowModel<T extends FormRowModelTypeType> implements IFormRowModel<T> {
+  protected readonly _id: string;
+  protected readonly _publicName: string;
+  protected readonly _required: boolean;
+  protected readonly _description: string;
   // TODO: Заменить на наследование классов
-  private readonly _type: FormRowModelTypeType;
+  protected readonly _type: T;
 
-  constructor(descriptor: IFormRowModelDescriptor) {
+  protected constructor(descriptor: IFormRowModelDescriptor<T>) {
     this._id = descriptor.id;
     this._publicName = descriptor.publicName;
     this._required = descriptor.required || false;
@@ -50,7 +50,7 @@ export class FormRowModel implements IFormRowModel {
     return this._required;
   }
 
-  toDescriptor(): IFormRowModelDescriptor {
+  toDescriptor(): IFormRowModelDescriptor<T> {
     return {
       id: this._id,
       publicName: this._publicName,
@@ -60,21 +60,66 @@ export class FormRowModel implements IFormRowModel {
     };
   }
 
-  clone(update: Partial<IFormRowModelDescriptor>): FormRowModel {
-    return new FormRowModel({
-      ...this.toDescriptor(),
-      ...update
-    });
-  }
+  abstract clone(update: Partial<IFormRowModelDescriptor<T>>): FormRowModel<T>;
 
   getType(): FormRowModelTypeType {
     return this._type;
   }
 
-  static serialize(formRowModel: FormRowModel): IFormRowModelDescriptor {
+  static serialize<T extends FormRowModelTypeType>(
+    formRowModel: FormRowModel<T>
+  ): IFormRowModelDescriptor<T> {
     return formRowModel.toDescriptor();
   }
-  static deserialize(formRowModelDescriptor: IFormRowModelDescriptor): FormRowModel {
-    return new FormRowModel(formRowModelDescriptor);
+  static deserialize(formRowModelDescriptor: IFormInputRowDescription): FormInputRowModel;
+  static deserialize(formRowModelDescriptor: IFormCalculatedRowDescription): FormCalculatedRowModel;
+  static deserialize(
+    formRowModelDescriptor: IFormInputRowDescription | IFormCalculatedRowDescription
+  ): FormInputRowModel | FormCalculatedRowModel;
+  static deserialize(
+    formRowModelDescriptor: IFormInputRowDescription | IFormCalculatedRowDescription
+  ): FormInputRowModel | FormCalculatedRowModel {
+    switch (formRowModelDescriptor.type) {
+      case 'calc':
+        return new FormCalculatedRowModel(formRowModelDescriptor);
+      case 'input':
+        return new FormInputRowModel(formRowModelDescriptor);
+    }
+  }
+}
+
+export interface IFormInputRowDescription extends IFormRowModelDescriptor<'input'> {}
+
+export class FormInputRowModel extends FormRowModel<'input'> {
+  constructor(description: IFormInputRowDescription) {
+    super({
+      ...description,
+      type: 'input'
+    });
+  }
+
+  clone(update: Partial<IFormInputRowDescription>): FormInputRowModel {
+    return new FormInputRowModel({
+      ...this.toDescriptor(),
+      ...update
+    });
+  }
+}
+
+export interface IFormCalculatedRowDescription extends IFormRowModelDescriptor<'calc'> {}
+
+export class FormCalculatedRowModel extends FormRowModel<'calc'> {
+  constructor(description: IFormCalculatedRowDescription) {
+    super({
+      ...description,
+      type: 'calc'
+    });
+  }
+
+  clone(update: Partial<IFormCalculatedRowDescription>): FormCalculatedRowModel {
+    return new FormCalculatedRowModel({
+      ...this.toDescriptor(),
+      ...update
+    });
   }
 }
