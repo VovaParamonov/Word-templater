@@ -10,7 +10,10 @@ async function genReport(options: IGenReportOptions): Promise<boolean> {
   console.log(options);
 
   try {
-    await editDocx({ path: options.filePath });
+    await editDocx({
+      path: options.filePath,
+      data: options.data
+    });
   } catch (e) {
     console.error('Ошибка изменения файла: ', e);
   }

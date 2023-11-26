@@ -10,14 +10,14 @@ const form = new FormModel({
   publicName: 'Основная',
   description: 'Это основная форма',
   rows: [
-    { id: 'field0', publicName: 'Рассчитываемое поле', type: 'calc' },
+    { id: 'ру тег с пробелами', publicName: 'Рассчитываемое поле', type: 'input' },
     {
-      id: 'field1',
+      id: 'ру_тег_без_пробелов',
       publicName: 'Первое поле',
       description: 'Описание первого поля',
       type: 'input'
     },
-    { id: 'field2', publicName: 'Второе поле', type: 'input' }
+    { id: 'en_tag_without_spaces', publicName: 'Второе поле', type: 'input' }
   ]
 });
 
