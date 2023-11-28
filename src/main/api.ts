@@ -3,7 +3,7 @@ import { editDocx } from './dcumentPatcher';
 
 export interface IGenReportOptions {
   filePath: string;
-  data: Record<string, number>;
+  data: Record<string, number | string>;
 }
 
 async function genReport(options: IGenReportOptions): Promise<boolean> {

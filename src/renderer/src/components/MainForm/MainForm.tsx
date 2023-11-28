@@ -14,7 +14,10 @@ import { useForm } from 'react-hook-form';
 import { CardFooter } from '@renderer/components/ui/card';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-// import { ScrollArea } from '@renderer/components/ui/scroll-area';
+import { FormCalculatedRowModel } from 'src/renderer/src/model/form/FormRow';
+import FormulaParser from 'fast-formula-parser';
+
+const formulaParser = new FormulaParser();
 
 interface IMainFormProps {
   formModel: FormModel;
@@ -68,7 +71,25 @@ const MainForm: FC<IMainFormProps> = (props) => {
 
   const handleSubmit = useCallback(
     (data: any) => {
-      onSubmit(data);
+      const filledData = {
+        ...data,
+        ...formModel.getRows().reduce((accum, row) => {
+          if (row.getType() !== 'calc') {
+            return accum;
+          }
+
+          const parsedStr = formulaParser.parse(
+            (row as FormCalculatedRowModel).calcPattern(data)
+          ) as string;
+
+          return {
+            ...accum,
+            [row.getId()]: parsedStr
+          };
+        }, {})
+      };
+
+      onSubmit(filledData);
     },
     [onSubmit]
   );

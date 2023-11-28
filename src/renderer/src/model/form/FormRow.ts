@@ -106,14 +106,33 @@ export class FormInputRowModel extends FormRowModel<'input'> {
   }
 }
 
-export interface IFormCalculatedRowDescription extends IFormRowModelDescriptor<'calc'> {}
+export interface IFormCalculatedRowDescription extends IFormRowModelDescriptor<'calc'> {
+  calcPattern: string;
+}
 
-export class FormCalculatedRowModel extends FormRowModel<'calc'> {
+export interface IFormCalculatedRowModel extends IFormRowModel<'calc'> {
+  calcPattern: () => string;
+}
+
+export class FormCalculatedRowModel
+  extends FormRowModel<'calc'>
+  implements IFormCalculatedRowModel
+{
+  _calcPattern: string;
   constructor(description: IFormCalculatedRowDescription) {
     super({
       ...description,
       type: 'calc'
     });
+
+    this._calcPattern = description.calcPattern;
+  }
+
+  toDescriptor(): IFormCalculatedRowDescription {
+    return {
+      ...super.toDescriptor(),
+      calcPattern: this._calcPattern
+    };
   }
 
   clone(update: Partial<IFormCalculatedRowDescription>): FormCalculatedRowModel {
@@ -121,5 +140,28 @@ export class FormCalculatedRowModel extends FormRowModel<'calc'> {
       ...this.toDescriptor(),
       ...update
     });
+  }
+
+  calcPattern(fillingData?: Record<string, number>): string {
+    if (!fillingData) {
+      return this._calcPattern;
+    }
+
+    const reg = /\$.*?\$/gm;
+    let result;
+    let parsedStr = this._calcPattern;
+
+    while ((result = reg.exec(parsedStr)) !== null) {
+      const key = result[0].slice(1, -1);
+
+      if (!(key in fillingData)) {
+        throw new Error('Не удалось найти ключ прописанный в формуле: ' + result[0]);
+      }
+
+      parsedStr = parsedStr.replace(result[0], fillingData[key].toString());
+      reg.lastIndex = 0;
+    }
+
+    return parsedStr;
   }
 }

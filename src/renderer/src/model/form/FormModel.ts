@@ -1,9 +1,10 @@
-import { FormRowModel, IFormRowModel } from '@renderer/model/form/FormRow';
+import { FormRowModel } from '@renderer/model/form/FormRow';
 import {
   FormRowModelTypeType,
   IFormCalculatedRowDescription,
   IFormInputRowDescription
 } from '@renderer/model/form/FormRow';
+import { FormCalculatedRowModel, FormInputRowModel } from 'src/renderer/src/model/form/FormRow';
 
 export interface IGetRowOptions {
   type?: FormRowModelTypeType | 'all';
@@ -21,10 +22,10 @@ export interface IFormModel {
   getPublicName: () => string;
   getDescription: () => string;
   toDescriptor(): IFormModelDescriptor;
-  getRows: () => IFormRowModel<FormRowModelTypeType>[];
+  getRows: () => (FormInputRowModel | FormCalculatedRowModel)[];
 }
 export class FormModel implements IFormModel {
-  private readonly _rows: FormRowModel<FormRowModelTypeType>[];
+  private readonly _rows: (FormInputRowModel | FormCalculatedRowModel)[];
   private readonly _id: string;
   private readonly _publicName: string;
   private readonly _description: string;
@@ -35,7 +36,7 @@ export class FormModel implements IFormModel {
     this._description = descriptor.description || '';
   }
 
-  getRows(options: IGetRowOptions = {}): FormRowModel<FormRowModelTypeType>[] {
+  getRows(options: IGetRowOptions = {}): (FormInputRowModel | FormCalculatedRowModel)[] {
     const { type = 'all' } = options;
 
     if (type === 'all') {

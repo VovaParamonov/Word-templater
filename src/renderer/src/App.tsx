@@ -1,4 +1,3 @@
-// import Versions from './components/Versions';
 // import icons from './assets/icons.svg';
 import { FormModel } from '@renderer/model/form/FormModel';
 import MainForm from '@renderer/components/MainForm/MainForm';
@@ -10,7 +9,12 @@ const form = new FormModel({
   publicName: 'Основная',
   description: 'Это основная форма',
   rows: [
-    { id: 'ру тег с пробелами', publicName: 'Рассчитываемое поле', type: 'input' },
+    {
+      id: 'ру тег с пробелами',
+      publicName: 'Рассчитываемое поле',
+      type: 'calc',
+      calcPattern: '$ру_тег_без_пробелов$ + $en_tag_without_spaces$'
+    },
     {
       id: 'ру_тег_без_пробелов',
       publicName: 'Первое поле',
