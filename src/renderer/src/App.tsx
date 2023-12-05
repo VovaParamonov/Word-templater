@@ -3,6 +3,10 @@ import { FormModel } from '@renderer/model/form/FormModel';
 import MainForm from '@renderer/components/MainForm/MainForm';
 import { useCallback, useRef } from 'react';
 import { ThemeModeToggle } from '@renderer/components/ThemeModeToggle';
+import { Button } from '@renderer/components/ui/button';
+import FileLoader from '@renderer/components/FileLoader/FileLoader';
+import wordIcon from '@renderer/assets/word_icon.svg';
+import excelIcon from '@renderer/assets/excel_icon.svg';
 
 const form = new FormModel({
   id: 'default',
@@ -18,7 +22,6 @@ const form = new FormModel({
     {
       id: 'ру_тег_без_пробелов',
       publicName: 'Первое поле',
-      description: 'Описание первого поля',
       type: 'input'
     },
     { id: 'en_tag_without_spaces', publicName: 'Второе поле', type: 'input' }
@@ -26,9 +29,10 @@ const form = new FormModel({
 });
 
 function App(): JSX.Element {
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const excelInputRef = useRef<HTMLInputElement>(null);
+  const wordInputRef = useRef<HTMLInputElement>(null);
   const handleFormSubmit = useCallback(async (data: Record<string, number>) => {
-    const file = (fileInputRef.current?.files ?? [])[0];
+    const file = (excelInputRef.current?.files ?? [])[0];
     console.log(data);
     console.log('file: ', file);
 
@@ -46,11 +50,61 @@ function App(): JSX.Element {
     console.log(await window.api.ping());
   }, []);
 
+  const onExcelFileChange = async (): Promise<void> => {
+    const file = (excelInputRef.current?.files ?? [])[0];
+
+    if (!file?.path) {
+      return;
+    }
+
+    console.log(excelInputRef);
+    console.log('Path: ', file.path);
+
+    console.log(await window.api.parseExcel(file.path));
+  };
+
+  const onWordFileChange = async (): Promise<void> => {
+    const file = (wordInputRef.current?.files ?? [])[0];
+
+    if (!file?.path) {
+      return;
+    }
+
+    console.log(await window.api.getDocText(file.path));
+  };
+
+  const fillReport = async (): Promise<void> => {
+    const excelFile = (excelInputRef.current?.files ?? [])[0];
+    const wordFile = (wordInputRef.current?.files ?? [])[0];
+
+    if (!excelFile || !wordFile) {
+      console.error('Необходимо загрузить оба файла');
+    }
+
+    const fillResult = await window.api.fillReportFromExcel({
+      excelPath: excelFile.path,
+      repTemplatePath: wordFile.path
+    });
+
+    if (fillResult) {
+      alert('Успешно заполнено');
+      return;
+    }
+
+    alert('Ошибка заполнения');
+  };
+
   return (
     <div className="container">
       <ThemeModeToggle className={'my-3'} />
-      <MainForm formModel={form} onSubmit={handleFormSubmit} />
-      <input type={'file'} ref={fileInputRef} />
+      {/*<MainForm formModel={form} onSubmit={handleFormSubmit} />*/}
+
+      {/*<h1>Загрузить Файлы: </h1>*/}
+      <div className="flex w-full justify-around">
+        <FileLoader icon={excelIcon} ref={excelInputRef} onChange={onExcelFileChange} />
+        <FileLoader icon={wordIcon} ref={wordInputRef} onChange={onWordFileChange} />
+      </div>
+      <Button onClick={fillReport}>Заполнить отчет</Button>
 
       {/* EXAMPLE CODE BELLOW */}
       {/*<Versions></Versions>*/}

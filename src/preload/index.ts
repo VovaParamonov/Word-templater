@@ -1,11 +1,15 @@
 import { contextBridge, ipcRenderer } from 'electron';
 import { electronAPI } from '@electron-toolkit/preload';
-import type { IGenReportOptions } from '../main/api';
+import type { IFillRepFromExcelOptions, IGenReportOptions } from '../main/api';
 
 // Custom APIs for renderer
 export const api = {
   ping: () => ipcRenderer.invoke('ping'),
-  genReport: (options: IGenReportOptions) => ipcRenderer.invoke('genReport', options)
+  genReport: (options: IGenReportOptions) => ipcRenderer.invoke('genReport', options),
+  parseExcel: (path: string) => ipcRenderer.invoke('parseExcel', path),
+  fillReportFromExcel: (options: IFillRepFromExcelOptions) =>
+    ipcRenderer.invoke('fillReportFromExcel', options),
+  getDocText: (path: string) => ipcRenderer.invoke('getDocText', path)
 };
 
 // Use `contextBridge` APIs to expose Electron APIs to
