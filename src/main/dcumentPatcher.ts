@@ -8,7 +8,7 @@ interface IEditDocxOptions {
   path: string;
   data: Record<string, string | number>;
 }
-export async function editDocx(options: IEditDocxOptions): Promise<boolean> {
+export async function editDocx(options: IEditDocxOptions): Promise<string | null> {
   try {
     const doc = await patchDocument(fs.readFileSync(options.path), {
       patches: Object.keys(options.data).reduce(
@@ -22,11 +22,12 @@ export async function editDocx(options: IEditDocxOptions): Promise<boolean> {
         {}
       )
     });
-    fs.writeFileSync('Result.docx', doc);
-    return true;
+    fs.writeFileSync('Report.docx', doc);
+
+    return process.cwd() + '/Report.docx';
   } catch (error) {
     console.error(`Error: ${error}`);
-    return false;
+    return null;
   }
 }
 
@@ -65,7 +66,9 @@ interface IFillDocxFromExcelOptions {
   data: { name: string; data: any[][] }[];
 }
 
-export async function fillReportFromExcelData(options: IFillDocxFromExcelOptions): Promise<boolean> {
+export async function fillReportFromExcelData(
+  options: IFillDocxFromExcelOptions
+): Promise<string | null> {
   try {
     const tagsFromDocs = await getTagsFromDoc(options.path);
 

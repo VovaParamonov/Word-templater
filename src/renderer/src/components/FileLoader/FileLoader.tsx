@@ -26,7 +26,14 @@ const FileLoader = forwardRef<HTMLInputElement, IFileLoaderProps>((props, ref) =
 
   return (
     <div className={'flex flex-col w-4/12'}>
-      {icon ? <img onClick={imgOnClick} src={icon} alt="" className={`cursor-pointer mb-5 h-96 object-contain ${!loaded ? 'opacity-30' : ''}`} /> : null}
+      {icon ? (
+        <img
+          onClick={imgOnClick}
+          src={icon}
+          alt=""
+          className={`cursor-pointer mb-5 h-96 object-contain ${!loaded ? 'opacity-20' : ''}`}
+        />
+      ) : null}
       <Input
         type={'file'}
         className={'cursor-pointer mb-2 w-full'}

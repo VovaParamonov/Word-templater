@@ -9,8 +9,9 @@ declare global {
       ping: () => Promise<string>;
       genReport: (options: IGenReportOptions) => Promise<boolean>;
       parseExcel: (path: string) => { name: string; data: any[][] }[];
-      fillReportFromExcel: (options: IFillRepFromExcelOptions) => Promise<boolean>;
+      fillReportFromExcel: (options: IFillRepFromExcelOptions) => Promise<string | null>;
       getDocText: (path: string) => Promise<string>;
+      openFolder: (path: string) => void;
     }
   }
 }

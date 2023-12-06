@@ -1,6 +1,7 @@
 import { ipcMain } from 'electron';
 import { editDocx, fillReportFromExcelData, getTagsFromDoc } from './dcumentPatcher';
-import { excelDataToJson, excelReader } from './ExcelReader';
+import { excelReader } from './ExcelReader';
+import child_process from 'child_process';
 
 export interface IGenReportOptions {
   filePath: string;
@@ -26,10 +27,14 @@ export interface IFillRepFromExcelOptions {
   excelPath: string;
   repTemplatePath: string;
 }
-async function fillReportFromExcel(options: IFillRepFromExcelOptions): Promise<boolean> {
+async function fillReportFromExcel(options: IFillRepFromExcelOptions): Promise<string | null> {
   const { excelPath, repTemplatePath } = options;
   const dataFromExcel = excelReader(excelPath);
   return fillReportFromExcelData({ path: repTemplatePath, data: dataFromExcel });
+}
+
+function openFolder(path: string): void {
+  child_process.exec(`start "" "${path}"`);
 }
 
 export function initApi(): void {
@@ -40,4 +45,5 @@ export function initApi(): void {
     fillReportFromExcel(options)
   );
   ipcMain.handle('getDocText', (_e, path: string) => getTagsFromDoc(path));
+  ipcMain.handle('openFolder', (_e, path: string) => openFolder(path));
 }

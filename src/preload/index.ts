@@ -9,7 +9,8 @@ export const api = {
   parseExcel: (path: string) => ipcRenderer.invoke('parseExcel', path),
   fillReportFromExcel: (options: IFillRepFromExcelOptions) =>
     ipcRenderer.invoke('fillReportFromExcel', options),
-  getDocText: (path: string) => ipcRenderer.invoke('getDocText', path)
+  getDocText: (path: string) => ipcRenderer.invoke('getDocText', path),
+  openFolder: (path: string) => ipcRenderer.invoke('openFolder', path)
 };
 
 // Use `contextBridge` APIs to expose Electron APIs to
