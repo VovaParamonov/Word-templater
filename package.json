@@ -1,10 +1,10 @@
 {
-  "name": "my-app",
+  "name": "WordTemplater",
   "version": "1.0.0",
-  "description": "An Electron application with React and TypeScript",
+  "description": "Application for filling word templates",
   "main": "./out/main/index.js",
-  "author": "example.com",
-  "homepage": "https://www.electronjs.org",
+  "author": "https://github.com/VovaParamonov",
+  "homepage": "https://github.com/VovaParamonov/dima_auto",
   "scripts": {
     "format": "prettier --write .",
     "lint": "eslint . --ext .js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix",

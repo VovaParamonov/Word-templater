@@ -94,6 +94,6 @@ export async function fillReportFromExcelData(
       data: extractedPatchData
     });
   } catch (e) {
-    return false;
+    return null;
   }
 }

@@ -1,10 +1,10 @@
 import FormToWord from '@renderer/components/pages/FormToWord';
 import ExcelToWord from '@renderer/components/pages/ExcelToWord';
 import Menu from '@renderer/components/pages/Menu';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { createHashRouter, RouterProvider } from 'react-router-dom';
 import { Toaster } from '@renderer/components/ui/toaster';
 
-const router = createBrowserRouter([
+const router = createHashRouter([
   {
     path: '/',
     element: <Menu />
