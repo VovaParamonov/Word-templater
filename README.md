@@ -1,10 +1,6 @@
-# my-app
+# Word templater
 
-An Electron application with React and TypeScript
-
-## Recommended IDE Setup
-
-- [VSCode](https://code.visualstudio.com/) + [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) + [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
+An simple Electron application with React and TypeScript for filling word file templates by data
 
 ## Project Setup
 
@@ -31,4 +27,12 @@ $ npm run build:mac
 
 # For Linux
 $ npm run build:linux
+```
+
+## UI libs
+
+UI is powered by shadcn/ui. For adding new ui component use script:
+
+```bash
+$ npm run ui:add -- component-name
 ```
