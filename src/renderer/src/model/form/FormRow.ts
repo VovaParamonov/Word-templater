@@ -6,19 +6,22 @@ export interface IFormRowModel<T extends FormRowModelTypeType> {
   toDescriptor: () => IFormRowModelDescriptor<T>;
   getType: () => FormRowModelTypeType;
   clone: (update: Partial<IFormRowModelDescriptor<T>>) => FormRowModel<T>;
+  update: (update: Partial<IFormRowModelDescriptor<T>>) => FormRowModel<FormRowModelTypeType>;
 }
 
 export interface IFormRowModelDescriptor<T extends FormRowModelTypeType> {
-  id: string;
-  publicName: string;
+  id?: string;
+  publicName?: string;
   required?: boolean;
   description?: string;
-  type: T;
+  type?: T;
 }
 
 export type FormRowModelTypeType = 'calc' | 'input';
 
-export abstract class FormRowModel<T extends FormRowModelTypeType> implements IFormRowModel<T> {
+export abstract class FormRowModel<T extends FormRowModelTypeType = 'input'>
+  implements IFormRowModel<T>
+{
   protected readonly _id: string;
   protected readonly _publicName: string;
   protected readonly _required: boolean;
@@ -26,12 +29,12 @@ export abstract class FormRowModel<T extends FormRowModelTypeType> implements IF
   // TODO: Заменить на наследование классов
   protected readonly _type: T;
 
-  protected constructor(descriptor: IFormRowModelDescriptor<T>) {
-    this._id = descriptor.id;
-    this._publicName = descriptor.publicName;
+  protected constructor(descriptor: IFormRowModelDescriptor<T> = {}) {
+    this._id = descriptor.id || Math.random().toString(16).slice(2);
+    this._publicName = descriptor.publicName || '';
     this._required = descriptor.required || false;
     this._description = descriptor.description || '';
-    this._type = descriptor.type || 'input';
+    this._type = descriptor.type || ('input' as T);
   }
 
   getDescription(): string {
@@ -62,6 +65,15 @@ export abstract class FormRowModel<T extends FormRowModelTypeType> implements IF
 
   abstract clone(update: Partial<IFormRowModelDescriptor<T>>): FormRowModel<T>;
 
+  update(
+    update: Partial<IFormRowModelDescriptor<FormRowModelTypeType>>
+  ): FormRowModel<FormRowModelTypeType> {
+    return FormRowModel.deserialize({
+      ...this.toDescriptor(),
+      ...update
+    });
+  }
+
   getType(): FormRowModelTypeType {
     return this._type;
   }
@@ -72,6 +84,9 @@ export abstract class FormRowModel<T extends FormRowModelTypeType> implements IF
     return formRowModel.toDescriptor();
   }
   static deserialize(formRowModelDescriptor: IFormInputRowDescription): FormInputRowModel;
+  static deserialize(
+    formRowModelDescriptor: IFormRowModelDescriptor<FormRowModelTypeType>
+  ): FormRowModel<FormRowModelTypeType>;
   static deserialize(formRowModelDescriptor: IFormCalculatedRowDescription): FormCalculatedRowModel;
   static deserialize(
     formRowModelDescriptor: IFormInputRowDescription | IFormCalculatedRowDescription
@@ -84,6 +99,8 @@ export abstract class FormRowModel<T extends FormRowModelTypeType> implements IF
         return new FormCalculatedRowModel(formRowModelDescriptor);
       case 'input':
         return new FormInputRowModel(formRowModelDescriptor);
+      case undefined:
+        return new FormInputRowModel(formRowModelDescriptor as IFormInputRowDescription);
     }
   }
 }
@@ -91,8 +108,9 @@ export abstract class FormRowModel<T extends FormRowModelTypeType> implements IF
 export interface IFormInputRowDescription extends IFormRowModelDescriptor<'input'> {}
 
 export class FormInputRowModel extends FormRowModel<'input'> {
-  constructor(description: IFormInputRowDescription) {
+  constructor(description: IFormInputRowDescription = {}) {
     super({
+      publicName: 'Безымянное поле для ввода',
       ...description,
       type: 'input'
     });
@@ -112,6 +130,7 @@ export interface IFormCalculatedRowDescription extends IFormRowModelDescriptor<'
 
 export interface IFormCalculatedRowModel extends IFormRowModel<'calc'> {
   calcPattern: () => string;
+  getCalcPattern: () => string;
 }
 
 export class FormCalculatedRowModel
@@ -121,6 +140,7 @@ export class FormCalculatedRowModel
   _calcPattern: string;
   constructor(description: IFormCalculatedRowDescription) {
     super({
+      publicName: 'Безымянное рассчитываемое поле',
       ...description,
       type: 'calc'
     });
@@ -142,6 +162,10 @@ export class FormCalculatedRowModel
     });
   }
 
+  /**
+   * Make calculation accordance with current calc pattern and given filling data
+   * @param fillingData
+   */
   calcPattern(fillingData?: Record<string, number>): string {
     if (!fillingData) {
       return this._calcPattern;
@@ -163,5 +187,9 @@ export class FormCalculatedRowModel
     }
 
     return parsedStr;
+  }
+
+  getCalcPattern(): string {
+    return this._calcPattern;
   }
 }

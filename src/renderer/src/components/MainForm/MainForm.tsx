@@ -6,16 +6,17 @@ import {
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle
+  CardTitle,
+  CardFooter
 } from '@renderer/components/ui/card';
 import { Button } from '@renderer/components/ui/button';
 import { Form } from '@renderer/components/ui/form';
 import { useForm } from 'react-hook-form';
-import { CardFooter } from '@renderer/components/ui/card';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { FormCalculatedRowModel } from 'src/renderer/src/model/form/FormRow';
 import FormulaParser from 'fast-formula-parser';
+import { useNavigate } from 'react-router-dom';
 
 const formulaParser = new FormulaParser();
 
@@ -27,6 +28,7 @@ interface IMainFormProps {
 // TODO: Implement caching of form state
 const MainForm: FC<IMainFormProps> = (props) => {
   const { formModel, onSubmit } = props;
+  const navigator = useNavigate();
 
   const formSchema = useMemo(
     () =>
@@ -94,6 +96,10 @@ const MainForm: FC<IMainFormProps> = (props) => {
     [onSubmit]
   );
 
+  const openEditor = useCallback(() => {
+    navigator('/form-editor/' + formModel.getId());
+  }, [formModel]);
+
   return (
     <Card>
       <CardHeader>
@@ -107,12 +113,15 @@ const MainForm: FC<IMainFormProps> = (props) => {
           {/*</ScrollArea>*/}
         </Form>
       </CardContent>
-      <CardFooter>
+      <CardFooter className={'gap-3'}>
         <Button
           disabled={!!Object.keys(form.formState.errors).length}
           onClick={form.handleSubmit(handleSubmit)}
         >
           Рассчитать
+        </Button>
+        <Button onClick={openEditor} variant={'outline'}>
+          Редактировать форму
         </Button>
       </CardFooter>
     </Card>

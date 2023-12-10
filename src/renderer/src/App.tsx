@@ -1,8 +1,10 @@
-import FormToWord from '@renderer/components/pages/FormToWord';
-import ExcelToWord from '@renderer/components/pages/ExcelToWord';
-import Menu from '@renderer/components/pages/Menu';
+import FormToWord from '@renderer/components/pages/FormToWordPage';
+import ExcelToWord from '@renderer/components/pages/ExcelToWordPage';
+import Menu from '@renderer/components/pages/MenuPage';
 import { createHashRouter, RouterProvider } from 'react-router-dom';
 import { Toaster } from '@renderer/components/ui/toaster';
+import FormEditorPage from '@renderer/components/pages/FormEditorPage';
+import StorageContextProvider from '@renderer/components/StorageContext';
 
 const router = createHashRouter([
   {
@@ -14,6 +16,10 @@ const router = createHashRouter([
     element: <FormToWord />
   },
   {
+    path: '/form-editor/:formId',
+    element: <FormEditorPage />
+  },
+  {
     path: '/excel-to-word',
     element: <ExcelToWord />
   }
@@ -21,10 +27,12 @@ const router = createHashRouter([
 
 function App(): JSX.Element {
   return (
-    <div className="container">
-      <RouterProvider router={router} />
-      <Toaster />
-    </div>
+    <StorageContextProvider>
+      <div className="container">
+        <RouterProvider router={router} />
+        <Toaster />
+      </div>
+    </StorageContextProvider>
   );
 }
 

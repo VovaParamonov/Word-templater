@@ -8,7 +8,7 @@ import InfoBtn from '@renderer/components/InfoBtn';
 import { useToast } from '@renderer/components/ui/use-toast';
 import { ToastAction } from '@renderer/components/ui/toast';
 
-const ExcelToWord: FC = () => {
+const ExcelToWordPage: FC = () => {
   const { toast } = useToast();
   const excelInputRef = useRef<HTMLInputElement>(null);
   const wordInputRef = useRef<HTMLInputElement>(null);
@@ -88,4 +88,4 @@ const ExcelToWord: FC = () => {
   );
 };
 
-export default WithPageLayout(ExcelToWord);
+export default WithPageLayout(ExcelToWordPage);

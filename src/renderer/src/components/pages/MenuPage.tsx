@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import WithPageLayout from '@renderer/components/WithPageLayout';
 import { Button } from '@renderer/components/ui/button';
 
-const Menu: FC = () => {
+const MenuPage: FC = () => {
   const navigate = useNavigate();
 
   const makeLinkHandler = (path: string) => () => {
@@ -21,4 +21,4 @@ const Menu: FC = () => {
   );
 };
 
-export default WithPageLayout(Menu);
+export default WithPageLayout(MenuPage);

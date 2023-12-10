@@ -28,8 +28,9 @@ function alphabetPosition(text): number {
 }
 
 // TODO: Добавить возможность выделения строки и колонки без упомянания названия таблицы
+// TODO: Добавить обработку колонок описываемыз двумя буквами
 export function matchExcelTag(str: string): ParsedExcelTag | null {
-  const regex = /(([‘’'"“”])(.*)([‘’'"“”])!)?(\w)(\d+)/gm;
+  const regex = /(([‘’'"“”«])(.*)([‘’'"“”»])!)?(\w)(\d+)/gm;
 
   const execResult = regex.exec(str);
 
@@ -59,7 +60,7 @@ export function matchExcelTag(str: string): ParsedExcelTag | null {
 
 /**
  *
- * @param tag -- /[‘’'"](.*)[‘’'"]!(\w)(\d+)/gm format str
+ * @param tag -- /(([‘’'"“”«])(.*)([‘’'"“”»])!)?(\w)(\d+)/gm format str
  * @param data
  */
 export function findCellByTag(
