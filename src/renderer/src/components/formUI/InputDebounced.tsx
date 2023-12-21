@@ -1,5 +1,5 @@
 import { ChangeEvent, FC, useCallback, useEffect, useState } from 'react';
-import { Input } from '@renderer/components/ui/Input';
+import { Input } from '@renderer/components/ui/input';
 interface IInputDebouncedProps {
   onChangeComplete: (val: string) => void;
   value: string;

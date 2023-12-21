@@ -1,6 +1,6 @@
 import { ChangeEvent, FC, useCallback } from 'react';
 import { FormCalculatedRowModel } from '@renderer/model/form/FormRow';
-import { Input } from '@renderer/components/ui/Input';
+import { Input } from '@renderer/components/ui/input';
 import { IFormCalculatedRowDescription } from 'src/renderer/src/model/form/FormRow';
 
 interface ICalcRowUIProps {

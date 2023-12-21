@@ -17,6 +17,8 @@ const form = new FormModel({
       id: 'ру тег с пробелами',
       publicName: 'Рассчитываемое поле',
       type: 'calc',
+      // TODO: Solve typing
+      //@ts-ignore
       calcPattern: '$ру_тег_без_пробелов$ + $en_tag_without_spaces$'
     },
     {

@@ -32,7 +32,8 @@ export class LoggableError extends Error {
   toDescriptor(): LoggableErrorDescriptor {
     return {
       originalErr: JSON.stringify(this._originErr),
-      logPath: this._logPath
+      logPath: this._logPath,
+      isLoggableErrorDescriptor: true
     };
   }
 }
@@ -41,13 +42,15 @@ function errHandler(e: any): LoggableErrorDescriptor {
   if (e.isLoggableErr) {
     return e.toDescriptor();
   } else {
-    new LoggableError(e).toDescriptor();
+    return new LoggableError(e).toDescriptor();
   }
 }
 
 export function handleErr<Args extends any[], Return extends Promise<any> | any>(
   fn: (...args: Args) => Return
 ): (...args: Args) => Return | LoggableErrorDescriptor {
+  // TODO: Solve typing
+  //@ts-ignore
   return (...args: Args) => {
     if (fn[Symbol.toStringTag] === 'AsyncFunction') {
       return (fn(...args) as Promise<any>).catch(errHandler);

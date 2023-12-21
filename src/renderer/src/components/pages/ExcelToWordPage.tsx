@@ -1,4 +1,4 @@
-import { FC, useEffect, useRef, useState } from 'react';
+import { FC, useRef, useState } from 'react';
 import excelIcon from '@renderer/assets/excel_icon.svg';
 import wordIcon from '@renderer/assets/word_icon.svg';
 import FileLoader from '@renderer/components/FileLoader/FileLoader';
@@ -7,7 +7,6 @@ import WithPageLayout from '@renderer/components/WithPageLayout';
 import InfoBtn from '@renderer/components/InfoBtn';
 import { useToasts } from '@renderer/components/useToasts';
 import { ToastAction } from '@renderer/components/ui/toast';
-import type { LoggableErrorDescriptor } from 'src/main/ErrHandler';
 
 const ExcelToWordPage: FC = () => {
   const { toast } = useToasts();
@@ -91,11 +90,6 @@ const ExcelToWordPage: FC = () => {
         )
       });
     } catch (e: any) {
-      let err = e;
-      if (e.isLoggableErr) {
-        err = e as LoggableErrorDescriptor;
-      }
-
       toast({
         variant: 'destructive',
         title: 'Ошибка',

@@ -1,6 +1,6 @@
 import { ChangeEvent, FC, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FormRowModel, FormRowModelTypeType } from '@renderer/model/form/FormRow';
-import { Input } from '@renderer/components/ui/Input';
+import { Input } from '@renderer/components/ui/input';
 import RowTypeSelector from './RowTypeSelector';
 import CalcRowUI from '@renderer/components/FormEditor/RowTypesUI/CalcRowUI';
 import { FormCalculatedRowModel, IFormRowModelDescriptor } from '@renderer/model/form/FormRow';
