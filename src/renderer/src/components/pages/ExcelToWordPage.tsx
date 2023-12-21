@@ -1,15 +1,16 @@
-import { FC, useRef, useState } from 'react';
+import { FC, useEffect, useRef, useState } from 'react';
 import excelIcon from '@renderer/assets/excel_icon.svg';
 import wordIcon from '@renderer/assets/word_icon.svg';
 import FileLoader from '@renderer/components/FileLoader/FileLoader';
 import { Button } from '@renderer/components/ui/button';
 import WithPageLayout from '@renderer/components/WithPageLayout';
 import InfoBtn from '@renderer/components/InfoBtn';
-import { useToast } from '@renderer/components/ui/use-toast';
+import { useToasts } from '@renderer/components/useToasts';
 import { ToastAction } from '@renderer/components/ui/toast';
+import type { LoggableErrorDescriptor } from 'src/main/ErrHandler';
 
 const ExcelToWordPage: FC = () => {
-  const { toast } = useToast();
+  const { toast } = useToasts();
   const excelInputRef = useRef<HTMLInputElement>(null);
   const wordInputRef = useRef<HTMLInputElement>(null);
   const [allLoaded, setAllLoaded] = useState(false);
@@ -47,31 +48,60 @@ const ExcelToWordPage: FC = () => {
       console.error('Необходимо загрузить оба файла');
     }
 
-    const filePath = await window.api.fillReportFromExcel({
-      excelPath: excelFile.path,
-      repTemplatePath: wordFile.path
-    });
-
-    if (!filePath) {
-      toast({
-        title: 'Ошибка',
-        description: 'Лог ошибки сохранен в файл ...'
+    try {
+      const filePath = await window.api.fillReportFromExcel({
+        excelPath: excelFile.path,
+        repTemplatePath: wordFile.path
       });
 
-      return;
+      if (!filePath) {
+        toast({
+          variant: 'destructive',
+          title: 'Ошибка',
+          description: 'Необработанная ошибка'
+        });
+
+        return;
+      }
+
+      if (typeof filePath !== 'string') {
+        toast({
+          variant: 'destructive',
+          title: 'Ошибка',
+          description: 'Лог ошибки сохранен в файл: ' + filePath.logPath,
+          action: (
+            <ToastAction altText="Open" onClick={() => openPath(filePath.logPath)}>
+              Открыть
+            </ToastAction>
+          )
+        });
+
+        return;
+      }
+
+      const filePathFolder = filePath.split('/').slice(0, -1).join('/');
+
+      toast({
+        title: 'Успешно',
+        description: `Отчет сохранен по пути [${filePathFolder}]`,
+        action: (
+          <ToastAction altText="Open" onClick={() => openPath(filePathFolder)}>
+            Открыть
+          </ToastAction>
+        )
+      });
+    } catch (e: any) {
+      let err = e;
+      if (e.isLoggableErr) {
+        err = e as LoggableErrorDescriptor;
+      }
+
+      toast({
+        variant: 'destructive',
+        title: 'Ошибка',
+        description: 'Необработанная ошибка'
+      });
     }
-
-    const filePathFolder = filePath.split('/').slice(0, -1).join('/');
-
-    toast({
-      title: 'Успешно',
-      description: `Отчет сохранен по пути [${filePathFolder}]`,
-      action: (
-        <ToastAction altText="Open" onClick={() => openPath(filePathFolder)}>
-          Открыть
-        </ToastAction>
-      )
-    });
   };
 
   return (

@@ -69,31 +69,27 @@ interface IFillDocxFromExcelOptions {
 export async function fillReportFromExcelData(
   options: IFillDocxFromExcelOptions
 ): Promise<string | null> {
-  try {
-    const tagsFromDocs = await getTagsFromDoc(options.path);
+  const tagsFromDocs = await getTagsFromDoc(options.path);
 
-    const parsedExcelTags: ParsedExcelTag[] = [];
-    // TODO: В будущем, возмжно, отдельное заполнение отдельных полей
-    const nonExcelTags: string[] = [];
+  const parsedExcelTags: ParsedExcelTag[] = [];
+  // TODO: В будущем, возмжно, отдельное заполнение отдельных полей
+  const nonExcelTags: string[] = [];
 
-    tagsFromDocs.forEach((dirtyTagFromDoc) => {
-      const parsedExcelTag = matchExcelTag(dirtyTagFromDoc);
+  tagsFromDocs.forEach((dirtyTagFromDoc) => {
+    const parsedExcelTag = matchExcelTag(dirtyTagFromDoc);
 
-      if (!parsedExcelTag) {
-        nonExcelTags.push(dirtyTagFromDoc);
-        return;
-      }
+    if (!parsedExcelTag) {
+      nonExcelTags.push(dirtyTagFromDoc);
+      return;
+    }
 
-      parsedExcelTags.push(parsedExcelTag);
-    });
+    parsedExcelTags.push(parsedExcelTag);
+  });
 
-    const extractedPatchData = extractSelectedTagsFromExcelData(options.data, parsedExcelTags);
+  const extractedPatchData = extractSelectedTagsFromExcelData(options.data, parsedExcelTags);
 
-    return editDocx({
-      path: options.path,
-      data: extractedPatchData
-    });
-  } catch (e) {
-    return null;
-  }
+  return editDocx({
+    path: options.path,
+    data: extractedPatchData
+  });
 }

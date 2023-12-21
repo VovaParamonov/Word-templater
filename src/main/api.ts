@@ -2,6 +2,7 @@ import { ipcMain } from 'electron';
 import { editDocx, fillReportFromExcelData, getTagsFromDoc } from './dcumentPatcher';
 import { excelReader } from './ExcelReader';
 import child_process from 'child_process';
+import { handleErr } from './ErrHandler';
 
 export interface IGenReportOptions {
   filePath: string;
@@ -39,11 +40,11 @@ function openFolder(path: string): void {
 
 export function initApi(): void {
   ipcMain.handle('ping', () => 'pong');
-  ipcMain.handle('genReport', (_e, ...args) => genReport(args[0]));
-  ipcMain.handle('parseExcel', (_e, path: string) => excelReader(path));
+  ipcMain.handle('genReport', (_e, ...args) => handleErr(genReport)(args[0]));
+  ipcMain.handle('parseExcel', (_e, path: string) => handleErr(excelReader)(path));
   ipcMain.handle('fillReportFromExcel', (_e, options: IFillRepFromExcelOptions) =>
-    fillReportFromExcel(options)
+    handleErr(fillReportFromExcel)(options)
   );
-  ipcMain.handle('getDocText', (_e, path: string) => getTagsFromDoc(path));
-  ipcMain.handle('openFolder', (_e, path: string) => openFolder(path));
+  ipcMain.handle('getDocText', (_e, path: string) => handleErr(getTagsFromDoc)(path));
+  ipcMain.handle('openFolder', (_e, path: string) => handleErr(openFolder)(path));
 }
